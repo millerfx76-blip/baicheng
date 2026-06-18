@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>百澄科技 2026财务看板</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif; background: #f0f2f5; color: #333; }
+.header { background: linear-gradient(135deg, #1a3a5c 0%, #1F4E79 50%, #2E75B6 100%); color: white; padding: 24px 32px; }
+.header h1 { font-size: 28px; font-weight: 700; letter-spacing: 2px; margin-bottom: 6px; }
+.header .sub { font-size: 13px; opacity: 0.8; }
+.container { max-width: 1440px; margin: 0 auto; padding: 20px 24px; }
+
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+.kpi-card { background: white; border-radius: 12px; padding: 20px 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); position: relative; overflow: hidden; }
+.kpi-card .label { font-size: 13px; color: #888; margin-bottom: 8px; }
+.kpi-card .value { font-size: 28px; font-weight: 700; }
+.kpi-card .sub-text { font-size: 12px; color: #999; margin-top: 4px; }
+.kpi-card::after { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; }
+.kpi-card.blue::after { background: #2E75B6; } .kpi-card.red::after { background: #C00000; }
+.kpi-card.green::after { background: #548235; } .kpi-card.orange::after { background: #ED7D31; }
+.value.positive { color: #548235; } .value.negative { color: #C00000; } .value.neutral { color: #1F4E79; }
+
+.section-title { font-size: 18px; font-weight: 700; color: #1F4E79; margin: 24px 0 12px; padding-left: 12px; border-left: 4px solid #2E75B6; }
+
+.chart-grid { display: grid; gap: 16px; margin-bottom: 20px; }
+.chart-grid.cols2 { grid-template-columns: 1fr 1fr; }
+.chart-grid.cols1 { grid-template-columns: 1fr; }
+.chart-panel { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); min-width:0; }
+.chart-panel .chart-title { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 8px; }
+.chart-box { width: 100%; min-height: 300px; }
+
+.table-wrap { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow-x: auto; margin-bottom: 20px; min-width:0; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: #1F4E79; color: white; padding: 10px 12px; text-align: center; font-weight: 600; white-space: nowrap; }
+td { padding: 8px 12px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+tr:hover { background: #f8fbff; }
+.amount { text-align: right; font-variant-numeric: tabular-nums; }
+
+.insight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.insight-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+.insight-card h4 { font-size: 15px; color: #1F4E79; margin-bottom: 8px; }
+.insight-card p { font-size: 13px; color: #555; line-height: 1.7; }
+
+.footer { text-align: center; color: #bbb; font-size: 12px; padding: 20px 0 40px; }
+
+@media (max-width: 1024px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .chart-grid.cols2 { grid-template-columns: 1fr; }
+  .insight-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>百澄科技 2026年 财务分析看板</h1>
+  <div class="sub">报告期间：2026年1月 - 5月 | 数据截止：2026-05-31 | 金额单位：元</div>
+</div>
+
+<div class="container">
+
+<!-- KPI Cards Row 1 -->
+<div class="kpi-grid">
+  <div class="kpi-card blue">
+    <div class="label">Q1 总收入</div>
+    <div class="value neutral">39.72<span style="font-size:16px">万元</span></div>
+    <div class="sub-text">月均 13.24 万元</div>
+  </div>
+  <div class="kpi-card red">
+    <div class="label">Q1 总费用</div>
+    <div class="value negative">50.03<span style="font-size:16px">万元</span></div>
+    <div class="sub-text">月均 16.68 万元</div>
+  </div>
+  <div class="kpi-card red">
+    <div class="label">Q1 净利润</div>
+    <div class="value negative">-10.32<span style="font-size:16px">万元</span></div>
+    <div class="sub-text">毛利率 -26.0% | 3月已扭亏为盈</div>
+  </div>
+  <div class="kpi-card orange">
+    <div class="label">贷款已还比例</div>
+    <div class="value neutral">58.0<span style="font-size:16px">%</span></div>
+    <div class="sub-text">已还 46.7万 / 总额 80.5万</div>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card blue">
+    <div class="label">街电充电宝 Q1</div>
+    <div class="value neutral">18.67万<span style="font-size:16px"> / </span><span class="positive">7.59万</span></div>
+    <div class="sub-text">利润率 <span style="color:#548235;font-weight:700">40.7%</span></div>
+  </div>
+  <div class="kpi-card red">
+    <div class="label">哈啰 Q1</div>
+    <div class="value neutral">20.42万<span style="font-size:16px"> / </span><span class="negative">-14.95万</span></div>
+    <div class="sub-text">利润率 <span style="color:#C00000;font-weight:700">-73.2%</span></div>
+  </div>
+  <div class="kpi-card green">
+    <div class="label">充电桩 Q1</div>
+    <div class="value neutral">0.62万<span style="font-size:16px"> / </span><span class="positive">0.34万</span></div>
+    <div class="sub-text">利润率 <span style="color:#548235;font-weight:700">54.7%</span></div>
+  </div>
+  <div class="kpi-card orange">
+    <div class="label">累计利息支出</div>
+    <div class="value negative">5.37<span style="font-size:16px">万元</span></div>
+    <div class="sub-text">月均 0.22万 | 占还款11.5%</div>
+  </div>
+</div>
+
+<!-- Revenue -->
+<div class="section-title">收入分析</div>
+<div class="chart-grid cols2">
+  <div class="chart-panel"><div class="chart-title">各业务线月度收入趋势</div><div class="chart-box" id="c1" style="height:380px"></div></div>
+  <div class="chart-panel"><div class="chart-title">Q1 业务收入构成</div><div class="chart-box" id="c2" style="height:380px"></div></div>
+</div>
+<div class="chart-grid cols2">
+  <div class="chart-panel"><div class="chart-title">哈啰各城市收入贡献（Q1累计）</div><div class="chart-box" id="c3" style="height:360px"></div></div>
+  <div class="chart-panel"><div class="chart-title">各业务线利润率对比</div><div class="chart-box" id="c4" style="height:360px"></div></div>
+</div>
+
+<!-- Profit -->
+<div class="section-title">利润分析</div>
+<div class="chart-grid cols2">
+  <div class="chart-panel"><div class="chart-title">各业务线月度利润对比</div><div class="chart-box" id="c5" style="height:380px"></div></div>
+  <div class="chart-panel"><div class="chart-title">整体收入-费用-利润趋势</div><div class="chart-box" id="c6" style="height:380px"></div></div>
+</div>
+
+<!-- Expense -->
+<div class="section-title">费用分析</div>
+<div class="chart-grid cols2">
+  <div class="chart-panel"><div class="chart-title">哈啰业务费用构成（1-5月累计）</div><div class="chart-box" id="c7" style="height:420px"></div></div>
+  <div class="chart-panel"><div class="chart-title">哈啰主要费用月度趋势</div><div class="chart-box" id="c8" style="height:420px"></div></div>
+</div>
+
+<!-- Loan -->
+<div class="section-title">贷款与现金流</div>
+<div class="chart-grid cols1">
+  <div class="chart-panel"><div class="chart-title">贷款还款进度（累计）</div><div class="chart-box" id="c9" style="height:380px"></div></div>
+</div>
+
+<!-- Insights -->
+<div class="section-title">关键发现与建议</div>
+<div class="insight-grid">
+  <div class="insight-card"><h4>收入结构</h4><p>Q1总收入39.72万元。街电充电宝是主力收入来源（18.7万元，占比47%），哈啰（20.4万元，占比51%），充电桩（0.6万元）。收入呈逐月增长态势，3月环比1月增幅显著。</p></div>
+  <div class="insight-card"><h4>盈利质量</h4><p>街电利润率40.7%，是最健康的业务线。充电桩利润率54.7%，小而稳健。哈啰利润率-73.2%，主要受电费、商务费、工资社保和贷款利息拖累，但3月哈啰已实现单月微利4,532元，呈现扭亏趋势。</p></div>
+  <div class="insight-card"><h4>费用管控</h4><p>哈啰五大费用项合计占总费用超60%。其中电费月均近万元，商务费波动大。建议对电费采取节能措施，商务费需严格预算控制。5月电费异常高（2.35万元），需关注是否为一次性支出。</p></div>
+  <div class="insight-card"><h4>现金流与贷款</h4><p>贷款总额80.5万元，已累计还款46.7万元（58.0%）。月均还贷约1.95万元，利息占比11.5%。Q1月度现金缺口约3.4万元，但3月已实现整体盈利1.8万元。</p></div>
+</div>
+
+<!-- Data Tables -->
+<div class="section-title">数据明细</div>
+<div class="chart-grid cols2">
+  <div class="table-wrap">
+    <div class="chart-title" style="margin-bottom:12px">收入回款记录</div>
+    <div style="max-height:400px;overflow-y:auto"><table>
+      <thead><tr><th>#</th><th>客户</th><th style="text-align:right">金额</th><th>银行</th></tr></thead>
+      <tbody id="income-table"></tbody>
+    </table></div>
+  </div>
+  <div class="table-wrap">
+    <div class="chart-title" style="margin-bottom:12px">近期费用明细</div>
+    <div style="max-height:400px;overflow-y:auto"><table>
+      <thead><tr><th>日期</th><th>项目</th><th>报销人</th><th>摘要</th><th style="text-align:right">金额</th></tr></thead>
+      <tbody id="expense-table"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<div class="footer">百澄科技 2026年度财务分析报告 · 数据来源：百澄2026.05财务数据</div>
+</div>
+
+<script>
+var DATA = {
+  incomeByLine: {"1月": {"哈啰": 43718.94, "街电充电宝": 185382.99, "充电桩": 2078.27, "智慧校园": 0, "合计": 105960.62}, "2月": {"哈啰": 77171.91, "街电充电宝": 175929.07, "充电桩": 1907.18, "智慧校园": 0, "合计": 137958.63}, "3月": {"哈啰": 83323.46, "街电充电宝": 202858.58, "充电桩": 2572.51, "智慧校园": 0, "合计": 153234.38}, "4月": {"哈啰": 0, "街电充电宝": 0, "充电桩": 0, "智慧校园": 0, "合计": 0}, "5月": {"哈啰": 0, "街电充电宝": 0, "充电桩": 0, "智慧校园": 0, "合计": 0}, "6月": {"哈啰": 0, "街电充电宝": 0, "充电桩": 0, "智慧校园": 0, "合计": 0}, "7月": {"哈啰": 0, "街电充电宝": 0, "充电桩": 0, "智慧校园": 0, "合计": 0}, "8月": {"哈啰": 0, "街电充电宝": 0, "充电桩": 0, "智慧校园": 0, "合计": 0}, "9月": {"哈啰": 0, "街电充电宝": 0, "充电桩": 0, "智慧校园": 0, "合计": 0}, "10月": {"哈啰": 0, "街电充电宝": 0, "充电桩": 0, "智慧校园": 0, "合计": 0}, "11月": {"哈啰": 0, "街电充电宝": 0, "充电桩": 0, "智慧校园": 0, "合计": 0}, "12月": {"哈啰": 0, "街电充电宝": 0, "充电桩": 0, "智慧校园": 0, "合计": 0}},
+  cityIncome: {"1月": {"晋城": 19932.33, "高平": 0, "沁水": 12634.69, "夏县": 11151.92}, "2月": {"晋城": 28833.35, "高平": 1946.14, "沁水": 21315.61, "夏县": 25076.81}, "3月": {"晋城": 35497.4, "高平": 0, "沁水": 24134.01, "夏县": 23692.05}, "4月": {"晋城": 0, "高平": 0, "沁水": 0, "夏县": 0}, "5月": {"晋城": 0, "高平": 0, "沁水": 0, "夏县": 0}, "6月": {"晋城": 0, "高平": 0, "沁水": 0, "夏县": 0}, "7月": {"晋城": 0, "高平": 0, "沁水": 0, "夏县": 0}, "8月": {"晋城": 0, "高平": 0, "沁水": 0, "夏县": 0}, "9月": {"晋城": 0, "高平": 0, "沁水": 0, "夏县": 0}, "10月": {"晋城": 0, "高平": 0, "沁水": 0, "夏县": 0}, "11月": {"晋城": 0, "高平": 0, "沁水": 0, "夏县": 0}, "12月": {"晋城": 0, "高平": 0, "沁水": 0, "夏县": 0}},
+  profitByLine: {"1月": {"哈啰_收入": 43718.94, "哈啰_费用": 174364.88, "哈啰_利润": -130645.94, "街电_收入": 60267.33, "街电_费用": 41650.14, "街电_利润": 18617.19, "充电桩_收入": 1974.35, "充电桩_费用": 950, "充电桩_利润": 1024.35, "办公室_收入": 0, "办公室_费用": 6460.22, "办公室_利润": -6460.22, "合计_收入": 105960.62, "合计_费用": 223425.24, "合计_利润": -117464.62}, "2月": {"哈啰_收入": 77171.91, "哈啰_费用": 100608.03, "哈啰_利润": -23436.12, "街电_收入": 58974.91, "街电_费用": 34811.58, "街电_利润": 24163.33, "充电桩_收入": 1811.81, "充电桩_费用": 970, "充电桩_利润": 841.81, "办公室_收入": 0, "办公室_费用": 5421.22, "办公室_利润": -5421.22, "合计_收入": 137958.63, "合计_费用": 141810.83, "合计_利润": -3852.19999999998}, "3月": {"哈啰_收入": 83323.46, "哈啰_费用": 78791.03, "哈啰_利润": 4532.43000000001, "街电_收入": 67467.05, "街电_费用": 34332.48, "街电_利润": 33134.57, "充电桩_收入": 2443.87, "充电桩_费用": 900, "充电桩_利润": 1543.87, "办公室_收入": 0, "办公室_费用": 21049.22, "办公室_利润": -21049.22, "合计_收入": 153234.38, "合计_费用": 135072.73, "合计_利润": 18161.65}, "4月": {"哈啰_收入": 0, "哈啰_费用": 0, "哈啰_利润": 0, "街电_收入": 0, "街电_费用": 0, "街电_利润": 0, "充电桩_收入": 0, "充电桩_费用": 0, "充电桩_利润": 0, "办公室_收入": 0, "办公室_费用": 0, "办公室_利润": 0, "合计_收入": 0, "合计_费用": 0, "合计_利润": 0}, "5月": {"哈啰_收入": 0, "哈啰_费用": 0, "哈啰_利润": 0, "街电_收入": 0, "街电_费用": 0, "街电_利润": 0, "充电桩_收入": 0, "充电桩_费用": 0, "充电桩_利润": 0, "办公室_收入": 0, "办公室_费用": 0, "办公室_利润": 0, "合计_收入": 0, "合计_费用": 0, "合计_利润": 0}, "6月": {"哈啰_收入": 0, "哈啰_费用": 0, "哈啰_利润": 0, "街电_收入": 0, "街电_费用": 0, "街电_利润": 0, "充电桩_收入": 0, "充电桩_费用": 0, "充电桩_利润": 0, "办公室_收入": 0, "办公室_费用": 0, "办公室_利润": 0, "合计_收入": 0, "合计_费用": 0, "合计_利润": 0}, "7月": {"哈啰_收入": 0, "哈啰_费用": 0, "哈啰_利润": 0, "街电_收入": 0, "街电_费用": 0, "街电_利润": 0, "充电桩_收入": 0, "充电桩_费用": 0, "充电桩_利润": 0, "办公室_收入": 0, "办公室_费用": 0, "办公室_利润": 0, "合计_收入": 0, "合计_费用": 0, "合计_利润": 0}, "8月": {"哈啰_收入": 0, "哈啰_费用": 0, "哈啰_利润": 0, "街电_收入": 0, "街电_费用": 0, "街电_利润": 0, "充电桩_收入": 0, "充电桩_费用": 0, "充电桩_利润": 0, "办公室_收入": 0, "办公室_费用": 0, "办公室_利润": 0, "合计_收入": 0, "合计_费用": 0, "合计_利润": 0}, "9月": {"哈啰_收入": 0, "哈啰_费用": 0, "哈啰_利润": 0, "街电_收入": 0, "街电_费用": 0, "街电_利润": 0, "充电桩_收入": 0, "充电桩_费用": 0, "充电桩_利润": 0, "办公室_收入": 0, "办公室_费用": 0, "办公室_利润": 0, "合计_收入": 0, "合计_费用": 0, "合计_利润": 0}, "10月": {"哈啰_收入": 0, "哈啰_费用": 0, "哈啰_利润": 0, "街电_收入": 0, "街电_费用": 0, "街电_利润": 0, "充电桩_收入": 0, "充电桩_费用": 0, "充电桩_利润": 0, "办公室_收入": 0, "办公室_费用": 0, "办公室_利润": 0, "合计_收入": 0, "合计_费用": 0, "合计_利润": 0}, "11月": {"哈啰_收入": 0, "哈啰_费用": 0, "哈啰_利润": 0, "街电_收入": 0, "街电_费用": 0, "街电_利润": 0, "充电桩_收入": 0, "充电桩_费用": 0, "充电桩_利润": 0, "办公室_收入": 0, "办公室_费用": 0, "办公室_利润": 0, "合计_收入": 0, "合计_费用": 0, "合计_利润": 0}, "12月": {"哈啰_收入": 0, "哈啰_费用": 0, "哈啰_利润": 0, "街电_收入": 0, "街电_费用": 0, "街电_利润": 0, "充电桩_收入": 0, "充电桩_费用": 0, "充电桩_利润": 0, "办公室_收入": 0, "办公室_费用": 0, "办公室_利润": 0, "合计_收入": 0, "合计_费用": 0, "合计_利润": 0}},
+  haloMonthlyExpense: {"1月": {"办公费": 2623.08, "差旅费": 154.27, "餐饮": 0, "燃油费": 0, "电池": 1650, "电费": 18854.4, "商务费": 35890, "车辆配件": 0, "服务费": 29565, "手续费": 31, "税金": 15916.78, "工资社保": 23300.55, "贷款利息": 3390.66, "贷款本金": 42989.14}, "2月": {"办公费": 1631.16, "差旅费": 403.09000000000003, "餐饮": 340, "燃油费": 924.82, "电池": 1650, "电费": 1900, "商务费": 20000, "车辆配件": 0, "服务费": 0, "手续费": 63.5, "税金": 352.51, "工资社保": 26963.15, "贷款利息": 3104.06, "贷款本金": 43275.740000000005}, "3月": {"办公费": 5404.94, "差旅费": 574, "餐饮": 0, "燃油费": 1227, "电池": 1650, "电费": 1296.78, "商务费": 2085, "车辆配件": 2123.6, "服务费": 0, "手续费": 41.71, "税金": 232.58, "工资社保": 17775.62, "贷款利息": 2815.56, "贷款本金": 43564.240000000005}, "4月": {"办公费": 1217.1, "差旅费": 103, "餐饮": 444.2, "燃油费": 1655.87, "电池": 1650, "电费": 3352.6, "商务费": 235, "车辆配件": 0, "服务费": 0, "手续费": 54.5, "税金": 7885, "工资社保": 22401.37, "贷款利息": 2525.12, "贷款本金": 43854.68}, "5月": {"办公费": 2952.72, "差旅费": 82, "餐饮": 384, "燃油费": 1326, "电池": 1650, "电费": 23512, "商务费": 0, "车辆配件": 3720, "服务费": 3600, "手续费": 341, "税金": 150.46, "工资社保": 0, "贷款利息": 2232.77, "贷款本金": 44147.03}},
+  haloCatTotals: {"办公费": 13829.0, "差旅费": 1316.3600000000001, "餐饮": 1168.2, "燃油费": 5133.69, "电池": 8250, "电费": 48915.78, "商务费": 58210, "车辆配件": 5843.6, "服务费": 33165, "手续费": 531.71, "税金": 24537.33, "工资社保": 90440.69, "贷款利息": 14068.17, "贷款本金": 217830.83000000002},
+  loanData: [{"date": "45717", "qs_principal": 20880.06, "qs_interest": 2060.41, "xx_principal": 0, "xx_interest": 0, "total_principal": 20880.06, "total_interest": 2060.41, "due_total": 22940.47, "paid_total": 22940.47}, {"date": "45748", "qs_principal": 21019.26, "qs_interest": 2670.45, "xx_principal": 0, "xx_interest": 0, "total_principal": 21019.26, "total_interest": 2670.45, "due_total": 23689.71, "paid_total": 23689.71}, {"date": "45778", "qs_principal": 21159.39, "qs_interest": 2530.32, "xx_principal": 0, "xx_interest": 0, "total_principal": 21159.39, "total_interest": 2530.32, "due_total": 23689.71, "paid_total": 23689.71}, {"date": "45809", "qs_principal": 21300.45, "qs_interest": 2389.26, "xx_principal": 0, "xx_interest": 0, "total_principal": 21300.45, "total_interest": 2389.26, "due_total": 23689.71, "paid_total": 23689.71}, {"date": "45839", "qs_principal": 21442.45, "qs_interest": 2247.26, "xx_principal": 0, "xx_interest": 0, "total_principal": 21442.45, "total_interest": 2247.26, "due_total": 23689.71, "paid_total": 23689.71}, {"date": "45870", "qs_principal": 21585.4, "qs_interest": 2104.31, "xx_principal": 0, "xx_interest": 0, "total_principal": 21585.4, "total_interest": 2104.31, "due_total": 23689.71, "paid_total": 23689.71}, {"date": "45901", "qs_principal": 21729.3, "qs_interest": 1960.41, "xx_principal": 20132.32, "xx_interest": 3751.4, "total_principal": 41861.62, "total_interest": 5711.81, "due_total": 47573.43, "paid_total": 47573.43}, {"date": "45931", "qs_principal": 21874.17, "qs_interest": 1815.54, "xx_principal": 20266.54, "xx_interest": 2423.55, "total_principal": 42140.71, "total_interest": 4239.09, "due_total": 46379.8, "paid_total": 46379.8}, {"date": "45962", "qs_principal": 22019.99, "qs_interest": 1669.72, "xx_principal": 20401.65, "xx_interest": 2288.44, "total_principal": 42421.64, "total_interest": 3958.16, "due_total": 46379.8, "paid_total": 46379.8}, {"date": "45992", "qs_principal": 22166.79, "qs_interest": 1522.92, "xx_principal": 20537.66, "xx_interest": 2152.43, "total_principal": 42704.45, "total_interest": 3675.35, "due_total": 46379.8, "paid_total": 46379.8}, {"date": "46023", "qs_principal": 22314.57, "qs_interest": 1375.14, "xx_principal": 20674.57, "xx_interest": 2015.52, "total_principal": 42989.14, "total_interest": 3390.66, "due_total": 46379.8, "paid_total": 46379.8}, {"date": "46054", "qs_principal": 22463.34, "qs_interest": 1226.37, "xx_principal": 20812.4, "xx_interest": 1877.69, "total_principal": 43275.74, "total_interest": 3104.06, "due_total": 46379.8, "paid_total": 46379.8}, {"date": "46082", "qs_principal": 22613.09, "qs_interest": 1076.62, "xx_principal": 20951.15, "xx_interest": 1738.94, "total_principal": 43564.24, "total_interest": 2815.56, "due_total": 46379.8, "paid_total": 46379.8}, {"date": "46113", "qs_principal": 22763.85, "qs_interest": 925.86, "xx_principal": 21090.83, "xx_interest": 1599.26, "total_principal": 43854.68, "total_interest": 2525.12, "due_total": 46379.8, "paid_total": 0}, {"date": "46143", "qs_principal": 22915.6, "qs_interest": 774.11, "xx_principal": 21231.43, "xx_interest": 1458.66, "total_principal": 44147.03, "total_interest": 2232.77, "due_total": 46379.8, "paid_total": 0}, {"date": "46174", "qs_principal": 23068.37, "qs_interest": 621.34, "xx_principal": 21372.98, "xx_interest": 1317.11, "total_principal": 44441.35, "total_interest": 1938.45, "due_total": 46379.8, "paid_total": 0}, {"date": "46204", "qs_principal": 23222.16, "qs_interest": 467.55, "xx_principal": 21515.46, "xx_interest": 1174.63, "total_principal": 44737.62, "total_interest": 1642.18, "due_total": 46379.8, "paid_total": 0}, {"date": "46235", "qs_principal": 23376.98, "qs_interest": 312.73, "xx_principal": 21658.9, "xx_interest": 1031.19, "total_principal": 45035.88, "total_interest": 1343.92, "due_total": 46379.8, "paid_total": 0}, {"date": "46266", "qs_principal": 23532.78, "qs_interest": 31.38, "xx_principal": 21803.29, "xx_interest": 886.8, "total_principal": 45336.07, "total_interest": 918.18, "due_total": 46254.25, "paid_total": 0}, {"date": "46296", "qs_principal": 0, "qs_interest": 0, "xx_principal": 21948.65, "xx_interest": 741.44, "total_principal": 21948.65, "total_interest": 741.44, "due_total": 22690.09, "paid_total": 0}, {"date": "46327", "qs_principal": 0, "qs_interest": 0, "xx_principal": 22094.97, "xx_interest": 595.12, "total_principal": 22094.97, "total_interest": 595.12, "due_total": 22690.09, "paid_total": 0}, {"date": "46357", "qs_principal": 0, "qs_interest": 0, "xx_principal": 22242.27, "xx_interest": 447.82, "total_principal": 22242.27, "total_interest": 447.82, "due_total": 22690.09, "paid_total": 0}, {"date": "46388", "qs_principal": 0, "qs_interest": 0, "xx_principal": 22390.55, "xx_interest": 299.54, "total_principal": 22390.55, "total_interest": 299.54, "due_total": 22690.09, "paid_total": 0}, {"date": "46419", "qs_principal": 0, "qs_interest": 0, "xx_principal": 22539.88, "xx_interest": 85.15, "total_principal": 22539.88, "total_interest": 85.15, "due_total": 22625.03, "paid_total": 0}],
+  incomeDetails: [{"name": "上海哈啰普惠科技有限公司", "amount": 54854.91, "bank_date": "46038", "bank": "建设银行"}, {"name": "上海哈啰普惠科技有限公司", "amount": 15237.83, "bank_date": "46043", "bank": "通商银行"}, {"name": "上海哈啰普惠科技有限公司", "amount": 15293.65, "bank_date": "46043", "bank": "通商银行"}, {"name": "上海哈啰普惠科技有限公司", "amount": 19389.26, "bank_date": "46065", "bank": "建设银行"}, {"name": "上海哈啰普惠科技有限公司", "amount": 543.07, "bank_date": "46097", "bank": "建设银行"}, {"name": "上海哈啰普惠科技有限公司", "amount": 28833.35, "bank_date": "46097", "bank": "建设银行"}, {"name": "上海哈啰普惠科技有限公司", "amount": 1946.14, "bank_date": "46097", "bank": "建设银行"}, {"name": "上海哈啰普惠科技有限公司", "amount": 11151.92, "bank_date": "46074", "bank": "通商银行"}, {"name": "上海哈啰普惠科技有限公司", "amount": 12634.69, "bank_date": "46074", "bank": "通商银行"}, {"name": "上海哈啰普惠科技有限公司", "amount": 21315.61, "bank_date": "46094", "bank": "通商银行"}, {"name": "上海哈啰普惠科技有限公司", "amount": 25076.81, "bank_date": "46094", "bank": "通商银行"}, {"name": "上海哈啰普惠科技有限公司", "amount": 30359.1, "bank_date": "46129", "bank": ""}, {"name": "上海哈啰普惠科技有限公司", "amount": 5138.3, "bank_date": "46129", "bank": ""}],
+  expenseDetails: [{"date": "2026-01-21", "project": "沁水哈啰", "person": "公转", "desc": "电池费", "amount": 150}, {"date": "2026-01-21", "project": "沁水哈啰", "person": "公转", "desc": "贷款利息", "amount": 1375.14}, {"date": "2026-01-21", "project": "沁水哈啰", "person": "公转", "desc": "贷款本金", "amount": 22314.57}, {"date": "2026-01-21", "project": "晋城哈啰", "person": "公转", "desc": "电池费", "amount": 900}, {"date": "2026-01-21", "project": "高平哈啰", "person": "公转", "desc": "电池费", "amount": 300}, {"date": "2026-01-21", "project": "夏县哈啰", "person": "公转", "desc": "电池费", "amount": 300}, {"date": "2026-01-21", "project": "夏县哈啰", "person": "公转", "desc": "贷款利息", "amount": 2015.52}, {"date": "2026-01-21", "project": "夏县哈啰", "person": "公转", "desc": "贷款本金", "amount": 20674.57}, {"date": "2026-02-25", "project": "沁水哈啰", "person": "公转", "desc": "电池费", "amount": 150}, {"date": "2026-02-25", "project": "沁水哈啰", "person": "张保珠", "desc": "沁水3月份电费", "amount": 500}, {"date": "2026-02-25", "project": "沁水哈啰", "person": "张保珠", "desc": "沁水晋城往返通行费", "amount": 75}, {"date": "2026-02-25", "project": "沁水哈啰", "person": "张保珠", "desc": "沁水晋城往返加油", "amount": 211}, {"date": "2026-02-25", "project": "晋城哈啰", "person": "公转", "desc": "电池费", "amount": 900}, {"date": "2026-02-25", "project": "高平哈啰", "person": "公转", "desc": "电池费", "amount": 300}, {"date": "2026-02-25", "project": "夏县哈啰", "person": "公转", "desc": "电池费", "amount": 300}, {"date": "2026-01-27", "project": "晋城哈啰", "person": "公转", "desc": "网银盾费用", "amount": 15.08}, {"date": "2026-01-23", "project": "晋城哈啰", "person": "公转", "desc": "技术服务费（数字证书）", "amount": 29565}, {"date": "2026-02-27", "project": "晋城哈啰", "person": "公转", "desc": "个税", "amount": 352.51}, {"date": "2026-02-28", "project": "晋城办公室", "person": "秦琦", "desc": "话费、邮寄费", "amount": 322}, {"date": "2026-02-28", "project": "街电充电宝", "person": "张保珠", "desc": "晋城高平长治通行费", "amount": 67}, {"date": "2026-02-28", "project": "高平哈啰", "person": "张保珠", "desc": "晋城高平往返通行费", "amount": 31}, {"date": "2026-02-02", "project": "沁水哈啰", "person": "张保珠", "desc": "沁水库房网费", "amount": 49}, {"date": "2026-02-02", "project": "沁水哈啰", "person": "张保珠", "desc": "沁水往返通行费", "amount": 45.09}, {"date": "2026-02-02", "project": "沁水哈啰", "person": "张保珠", "desc": "沁水2月份电费", "amount": 300}, {"date": "2026-02-02", "project": "沁水哈啰", "person": "张保珠", "desc": "沁水往返加油", "amount": 200}, {"date": "2026-02-02", "project": "充电桩", "person": "秦琦", "desc": "锦华充电桩电费", "amount": 370}, {"date": "2026-02-02", "project": "高平哈啰", "person": "张保珠", "desc": "晋城高平往返通行费", "amount": 19}, {"date": "2026-02-02", "project": "高平哈啰", "person": "张保珠", "desc": "晋城高平往返加油", "amount": 200}, {"date": "2026-02-02", "project": "高平哈啰", "person": "王波", "desc": "高平客情", "amount": 14000}, {"date": "2026-02-13", "project": "晋城哈啰", "person": "张保珠", "desc": "晋城哈啰安全经费专用账户开设", "amount": 30.16}, {"date": "2026-02-13", "project": "街电充电宝", "person": "公转", "desc": "货款", "amount": 12600}, {"date": "2026-01-09", "project": "沁水哈啰", "person": "张保珠", "desc": "沁水、夏县员工保险", "amount": 810}, {"date": "2026-01-18", "project": "晋城哈啰", "person": "张保珠", "desc": "酒", "amount": 1890}, {"date": "2026-01-18", "project": "晋城哈啰", "person": "张保珠", "desc": "资料打印费", "amount": 234}, {"date": "2026-01-18", "project": "晋城哈啰", "person": "张保珠", "desc": "库房安全责任保险", "amount": 1485}, {"date": "2026-01-18", "project": "晋城哈啰", "person": "王波", "desc": "晋城客情", "amount": 34000}, {"date": "2026-01-20", "project": "晋城办公室", "person": "张保珠", "desc": "凤苑小区燃气费", "amount": 140}, {"date": "2026-01-20", "project": "晋城办公室", "person": "张保珠", "desc": "窗帘", "amount": 200}, {"date": "2026-01-20", "project": "晋城办公室", "person": "张保珠", "desc": "餐饮", "amount": 1296}, {"date": "2026-01-22", "project": "沁水哈啰", "person": "张保珠", "desc": "沁水库房监控配件", "amount": 25}, {"date": "2026-01-29", "project": "晋城哈啰", "person": "张保珠", "desc": "水管阀门", "amount": 54}, {"date": "2026-01-29", "project": "充电桩", "person": "张保珠", "desc": "南村富泽小区充电桩电费", "amount": 950}, {"date": "2026-01-31", "project": "沁水哈啰", "person": "张保珠", "desc": "沁水往返通行费", "amount": 105}, {"date": "2026-01-31", "project": "晋城办公室", "person": "秦琦", "desc": "话费、邮寄费、水票", "amount": 225}, {"date": "2026-01-31", "project": "街电充电宝", "person": "刘丽英", "desc": "快递费、水电费", "amount": 537.3}, {"date": "2026-01-31", "project": "街电充电宝", "person": "刘丽英", "desc": "永辉超市办卡", "amount": 5500}, {"date": "2026-01-31", "project": "高平哈啰", "person": "张保珠", "desc": "晋城高平往返通行费", "amount": 49.27}, {"date": "2026-02-01", "project": "夏县哈啰", "person": "张保珠", "desc": "夏县2月份电费", "amount": 500}, {"date": "2026-02-03", "project": "夏县哈啰", "person": "张保珠", "desc": "夏县客情", "amount": 1000}, {"date": "2026-02-03", "project": "夏县哈啰", "person": "王波", "desc": "夏县客情", "amount": 5000}, {"date": "2026-02-04", "project": "夏县哈啰", "person": "张保珠", "desc": "夏县3月份电费", "amount": 600}, {"date": "2026-02-04", "project": "夏县哈啰", "person": "张保珠", "desc": "夏县沁水往返通行费、住宿费", "amount": 184}, {"date": "2026-02-04", "project": "夏县哈啰", "person": "张保珠", "desc": "夏县沁水往返加油", "amount": 160}, {"date": "2026-02-07", "project": "沁水哈啰", "person": "张保珠", "desc": "沁水晋城往返通行费", "amount": 49}, {"date": "2026-02-11", "project": "充电桩", "person": "张保珠", "desc": "富泽小区充电桩电费", "amount": 600}, {"date": "2026-02-24", "project": "沁水哈啰", "person": "赵鑫", "desc": "沁水往返货车加油", "amount": 153.82}, {"date": "2026-02-26", "project": "晋城哈啰", "person": "赵鑫", "desc": "长治招投标打印费", "amount": 1552}, {"date": "2026-02-26", "project": "晋城哈啰", "person": "赵鑫", "desc": "长治招投标餐费", "amount": 340}, {"date": "2026-03-02", "project": "晋城哈啰", "person": "赵鑫", "desc": "长治招标往返加油", "amount": 200}, {"date": "2026-03-02", "project": "晋城哈啰", "person": "赵鑫", "desc": "长治招标往返通行费", "amount": 36}, {"date": "2026-03-03", "project": "夏县哈啰", "person": "赵鑫", "desc": "夏县语音提示制作费用", "amount": 30}, {"date": "2026-03-04", "project": "晋城哈啰", "person": "赵鑫", "desc": "晋城哈啰车辆配件", "amount": 1061.8}, {"date": "2026-03-31", "project": "沁水哈啰", "person": "张保珠", "desc": "沁水电费", "amount": 497.31}, {"date": "2026-03-31", "project": "沁水哈啰", "person": "张保珠", "desc": "沁水网费", "amount": 96.48}, {"date": "2026-03-31", "project": "沁水哈啰", "person": "张保珠", "desc": "通行费", "amount": 73}, {"date": "2026-03-31", "project": "沁水哈啰", "person": "张保珠", "desc": "小车加油", "amount": 181}, {"date": "2026-03-31", "project": "晋城哈啰", "person": "张保珠", "desc": "货车加油", "amount": 250}, {"date": "2026-03-31", "project": "晋城哈啰", "person": "张保珠", "desc": "加油", "amount": 150}, {"date": "2026-03-31", "project": "晋城哈啰", "person": "张保珠", "desc": "上牌固定牌照", "amount": 1740}, {"date": "2026-03-31", "project": "晋城哈啰", "person": "张保珠", "desc": "洗车机1台", "amount": 240}, {"date": "2026-03-31", "project": "晋城哈啰", "person": "张保珠", "desc": "晋城哈啰新车停车场地客情", "amount": 1000}, {"date": "2026-03-31", "project": "晋城哈啰", "person": "张保珠", "desc": "换电柜充电器", "amount": 1012.26}, {"date": "2026-03-31", "project": "晋城哈啰", "person": "张保珠", "desc": "洗车机", "amount": 540}, {"date": "2026-03-31", "project": "街电充电宝", "person": "刘丽英", "desc": "餐费", "amount": 311.8}, {"date": "2026-03-31", "project": "街电充电宝", "person": "刘丽英", "desc": "快递费", "amount": 1136.1}, {"date": "2026-03-31", "project": "高平哈啰", "person": "张保珠", "desc": "高平网费", "amount": 59.7}, {"date": "2026-03-31", "project": "高平哈啰", "person": "张保珠", "desc": "高平晋城通行费", "amount": 37}, {"date": "2026-03-31", "project": "夏县哈啰", "person": "张保珠", "desc": "通行费", "amount": 136}, {"date": "2026-03-31", "project": "夏县哈啰", "person": "张保珠", "desc": "夏县电费", "amount": 799.47}, {"date": "2026-03-31", "project": "夏县哈啰", "person": "张保珠", "desc": "加油", "amount": 400}, {"date": "2026-03-31", "project": "夏县哈啰", "person": "张保珠", "desc": "夏县上牌客情", "amount": 215}, {"date": "2026-03-20", "project": "沁水哈啰", "person": "公转", "desc": "电池费", "amount": 150}, {"date": "2026-03-20", "project": "晋城哈啰", "person": "公转", "desc": "电池费", "amount": 900}, {"date": "2026-03-20", "project": "高平哈啰", "person": "公转", "desc": "电池费", "amount": 300}, {"date": "2026-03-20", "project": "夏县哈啰", "person": "公转", "desc": "电池费", "amount": 300}, {"date": "2026-03-20", "project": "夏县哈啰", "person": "张保珠", "desc": "通行住宿", "amount": 184}, {"date": "2026-03-20", "project": "夏县哈啰", "person": "张保珠", "desc": "加油", "amount": 154}, {"date": "2026-03-20", "project": "夏县哈啰", "person": "张保珠", "desc": "夏县车辆合格证邮寄费", "amount": 31}, {"date": "2026-03-29", "project": "晋城办公室", "person": "公转", "desc": "晋城市锦华苑房租", "amount": 14187}, {"date": "2026-03-29", "project": "晋城办公室", "person": "公转", "desc": "晋城市锦华苑物业费", "amount": 1113}, {"date": "2026-01-05", "project": "晋城哈啰", "person": "公转", "desc": "银行手续费", "amount": 31}, {"date": "2026-02-05", "project": "晋城哈啰", "person": "公转", "desc": "银行手续费", "amount": 63.5}, {"date": "2026-03-05", "project": "晋城哈啰", "person": "公转", "desc": "银行手续费", "amount": 47.5}, {"date": "2026-03-21", "project": "沁水哈啰", "person": "公转", "desc": "贷款利息", "amount": 1076.62}, {"date": "2026-03-21", "project": "沁水哈啰", "person": "公转", "desc": "贷款本金", "amount": 22613.09}, {"date": "2026-03-21", "project": "晋城哈啰", "person": "公转", "desc": "利息", "amount": -5.79}, {"date": "2026-03-21", "project": "夏县哈啰", "person": "公转", "desc": "贷款利息", "amount": 1738.94}, {"date": "2026-03-21", "project": "夏县哈啰", "person": "公转", "desc": "贷款本金", "amount": 20951.15}, {"date": "2026-01-28", "project": "晋城哈啰", "person": "公转", "desc": "陈志鹏", "amount": 16590}, {"date": "2026-01-28", "project": "高平哈啰", "person": "公转", "desc": "高平市长平中学校", "amount": 2264.4}, {"date": "2026-01-15", "project": "沁水哈啰", "person": "公转", "desc": "工资社保", "amount": 2749.36}, {"date": "2026-01-15", "project": "晋城哈啰", "person": "公转", "desc": "工资社保", "amount": 17551.19}, {"date": "2026-01-15", "project": "晋城办公室", "person": "公转", "desc": "工资社保", "amount": 4599.22}, {"date": "2026-01-15", "project": "街电充电宝", "person": "公转", "desc": "货款", "amount": 12600}, {"date": "2026-01-15", "project": "街电充电宝", "person": "公转", "desc": "工资社保", "amount": 23012.84}, {"date": "2026-01-15", "project": "夏县哈啰", "person": "公转", "desc": "工资社保", "amount": 3000}, {"date": "2026-03-16", "project": "街电充电宝", "person": "公转", "desc": "货款", "amount": 12600}, {"date": "2026-03-08", "project": "晋城哈啰", "person": "张保珠", "desc": "哈啰配件", "amount": 1061.8}, {"date": "2026-03-08", "project": "晋城哈啰", "person": "张保珠", "desc": "公益活动购买米面油", "amount": 870}, {"date": "2026-03-08", "project": "晋城哈啰", "person": "张保珠", "desc": "考核资料打印", "amount": 55.5}, {"date": "2026-03-15", "project": "沁水哈啰", "person": "公转", "desc": "工资社保", "amount": 2420}, {"date": "2026-03-15", "project": "晋城哈啰", "person": "公转", "desc": "个税", "amount": 232.58}, {"date": "2026-03-15", "project": "晋城哈啰", "person": "公转", "desc": "工资社保", "amount": 10658.22}, {"date": "2026-03-15", "project": "晋城办公室", "person": "公转", "desc": "工资社保", "amount": 4599.22}, {"date": "2026-03-15", "project": "充电桩", "person": "张保珠", "desc": "富泽小区充电桩电费", "amount": 900}, {"date": "2026-03-15", "project": "街电充电宝", "person": "公转", "desc": "工资社保", "amount": 20144.58}, {"date": "2026-03-15", "project": "夏县哈啰", "person": "公转", "desc": "工资社保", "amount": 4697.4}, {"date": "2026-03-17", "project": "晋城办公室", "person": "张保珠", "desc": "车辆（晋A92TD5）交强险", "amount": 870}, {"date": "2026-03-22", "project": "街电充电宝", "person": "张保珠", "desc": "街电模块加接头费用", "amount": 140}, {"date": "2026-03-30", "project": "晋城哈啰", "person": "秦琦", "desc": "员工工作证", "amount": 125}, {"date": "2026-03-30", "project": "晋城哈啰", "person": "秦琦", "desc": "车筐封闭材料打印", "amount": 1450}, {"date": "2026-03-30", "project": "晋城办公室", "person": "秦琦", "desc": "装订、水费、快递、手机费", "amount": 280}, {"date": "2026-03-30", "project": "夏县哈啰", "person": "秦琦", "desc": "资料打印、印泥", "amount": 25}, {"date": "2026-01-17", "project": "晋城哈啰", "person": "公转", "desc": "个税", "amount": 459.93}, {"date": "2026-01-19", "project": "晋城哈啰", "person": "公转", "desc": "税款", "amount": 15456.85}, {"date": "2026-02-15", "project": "沁水哈啰", "person": "公转", "desc": "工资社保", "amount": 2580}, {"date": "2026-02-15", "project": "晋城哈啰", "person": "公转", "desc": "工资社保", "amount": 21098.15}, {"date": "2026-02-15", "project": "晋城办公室", "person": "公转", "desc": "工资社保", "amount": 5099.22}, {"date": "2026-02-15", "project": "街电充电宝", "person": "公转", "desc": "工资社保", "amount": 22144.58}, {"date": "2026-02-15", "project": "夏县哈啰", "person": "公转", "desc": "工资社保", "amount": 3285}, {"date": "2026-02-21", "project": "沁水哈啰", "person": "公转", "desc": "贷款利息", "amount": 1226.37}, {"date": "2026-02-21", "project": "沁水哈啰", "person": "公转", "desc": "贷款本金", "amount": 22463.34}, {"date": "2026-02-21", "project": "夏县哈啰", "person": "公转", "desc": "贷款利息", "amount": 1877.69}, {"date": "2026-02-21", "project": "夏县哈啰", "person": "公转", "desc": "贷款本金", "amount": 20812.4}, {"date": "2026-04-07", "project": "充电桩", "person": "张保珠", "desc": "富泽小区充电桩电费", "amount": 1850}, {"date": "2026-04-10", "project": "晋城哈啰", "person": "秦琦", "desc": "餐费", "amount": 222.2}, {"date": "2026-04-10", "project": "晋城哈啰", "person": "秦琦", "desc": "哈啰车辆广告贴纸", "amount": 280}, {"date": "2026-04-13", "project": "充电桩", "person": "张保珠", "desc": "锦华充电桩电费", "amount": 207}, {"date": "2026-04-16", "project": "晋城哈啰", "person": "公转", "desc": "个税", "amount": 160.58}, {"date": "2026-04-16", "project": "晋城哈啰", "person": "张保珠", "desc": "客情烟", "amount": 235}, {"date": "2026-04-16", "project": "晋城哈啰", "person": "张保珠", "desc": "油漆", "amount": 348}, {"date": "2026-04-16", "project": "晋城哈啰", "person": "张保珠", "desc": "充电", "amount": 20.1}, {"date": "2026-04-16", "project": "晋城哈啰", "person": "张保珠", "desc": "吃饭", "amount": 222}, {"date": "2026-04-18", "project": "晋城哈啰", "person": "张保珠", "desc": "货车加油", "amount": 363}, {"date": "2026-04-19", "project": "晋城哈啰", "person": "公转", "desc": "一季度税款", "amount": 7724.42}, {"date": "2026-04-19", "project": "晋城办公室", "person": "秦琦", "desc": "快递费", "amount": 13}, {"date": "2026-04-19", "project": "晋城办公室", "person": "秦琦", "desc": "手机话费", "amount": 150}, {"date": "2026-04-19", "project": "夏县哈啰", "person": "张保珠", "desc": "夏县电费", "amount": 500}, {"date": "2026-04-19", "project": "夏县哈啰", "person": "张保珠", "desc": "夏县上牌资料打印", "amount": 320}, {"date": "2026-04-21", "project": "沁水哈啰", "person": "公转", "desc": "贷款利息", "amount": 925.86}, {"date": "2026-04-21", "project": "沁水哈啰", "person": "公转", "desc": "贷款本金", "amount": 22763.85}, {"date": "2026-04-21", "project": "沁水哈啰", "person": "张保珠", "desc": "沁水电费", "amount": 500}, {"date": "2026-04-21", "project": "沁水哈啰", "person": "张保珠", "desc": "沁水网费", "amount": 49}, {"date": "2026-04-21", "project": "沁水哈啰", "person": "张保珠", "desc": "通行费", "amount": 49}, {"date": "2026-04-21", "project": "沁水哈啰", "person": "张保珠", "desc": "小车加油", "amount": 200}, {"date": "2026-04-21", "project": "夏县哈啰", "person": "公转", "desc": "贷款利息", "amount": 1599.26}, {"date": "2026-04-21", "project": "夏县哈啰", "person": "公转", "desc": "贷款本金", "amount": 21090.83}, {"date": "2026-04-30", "project": "沁水哈啰", "person": "公转", "desc": "电池费", "amount": 150}, {"date": "2026-04-30", "project": "沁水哈啰", "person": "张保珠", "desc": "货车加油", "amount": 200}, {"date": "2026-04-30", "project": "沁水哈啰", "person": "张保珠", "desc": "通行费", "amount": 54}, {"date": "2026-04-30", "project": "晋城哈啰", "person": "公转", "desc": "电池费", "amount": 900}, {"date": "2026-04-30", "project": "晋城哈啰", "person": "张保珠", "desc": "货车加油", "amount": 892.87}, {"date": "2026-04-30", "project": "晋城哈啰", "person": "张保珠", "desc": "转运旧车、叉车费用", "amount": 200}, {"date": "2026-04-30", "project": "街电充电宝", "person": "刘丽英", "desc": "快递费、水电费、底座", "amount": 862}, {"date": "2026-04-30", "project": "高平哈啰", "person": "公转", "desc": "电池费", "amount": 300}, {"date": "2026-04-30", "project": "夏县哈啰", "person": "公转", "desc": "电池费", "amount": 300}, {"date": "2026-05-01", "project": "沁水哈啰", "person": "张保珠", "desc": "清凉坐垫150个", "amount": 900}, {"date": "2026-05-01", "project": "晋城哈啰", "person": "公转", "desc": "银行手续费/网银高级版", "amount": 341}, {"date": "2026-05-01", "project": "晋城办公室", "person": "秦琦", "desc": "水票（12桶水）", "amount": 100}, {"date": "2026-05-01", "project": "晋城办公室", "person": "秦琦", "desc": "美工刀", "amount": 7}, {"date": "2026-05-01", "project": "夏县哈啰", "person": "张保珠", "desc": "清凉坐垫150个", "amount": 900}, {"date": "2026-05-11", "project": "晋城办公室", "person": "张保珠", "desc": "小车车辆保养", "amount": 766}, {"date": "2026-05-12", "project": "晋城哈啰", "person": "张保珠", "desc": "车辆坐垫", "amount": 1920}, {"date": "2026-05-15", "project": "晋城哈啰", "person": "秦琦", "desc": "平板租赁（哈啰上牌用）", "amount": 133}, {"date": "2026-05-18", "project": "晋城哈啰", "person": "公转", "desc": "个税", "amount": 150.46}, {"date": "2026-05-18", "project": "高平哈啰", "person": "张保珠", "desc": "货车加油", "amount": 100}, {"date": "2026-05-18", "project": "高平哈啰", "person": "张保珠", "desc": "通行费", "amount": 21}, {"date": "2026-05-19", "project": "高平哈啰", "person": "张保珠", "desc": "货车加油", "amount": 600}, {"date": "2026-05-19", "project": "高平哈啰", "person": "张保珠", "desc": "通行费", "amount": 10}, {"date": "2026-05-21", "project": "沁水哈啰", "person": "公转", "desc": "电池费", "amount": 150}, {"date": "2026-05-21", "project": "沁水哈啰", "person": "公转", "desc": "贷款利息", "amount": 774.11}, {"date": "2026-05-21", "project": "沁水哈啰", "person": "公转", "desc": "贷款本金", "amount": 22915.6}, {"date": "2026-05-21", "project": "沁水哈啰", "person": "张保珠", "desc": "货车加油", "amount": 400}, {"date": "2026-05-21", "project": "沁水哈啰", "person": "张保珠", "desc": "通行费", "amount": 27}, {"date": "2026-05-21", "project": "晋城哈啰", "person": "公转", "desc": "电池费", "amount": 900}, {"date": "2026-05-21", "project": "晋城哈啰", "person": "张保珠", "desc": "餐费", "amount": 384}, {"date": "2026-05-21", "project": "晋城哈啰", "person": "张保珠", "desc": "叉车费用和库房配件", "amount": 2279.72}, {"date": "2026-05-21", "project": "高平哈啰", "person": "公转", "desc": "电池费", "amount": 300}, {"date": "2026-05-21", "project": "夏县哈啰", "person": "公转", "desc": "电池费", "amount": 300}, {"date": "2026-05-21", "project": "夏县哈啰", "person": "公转", "desc": "贷款利息", "amount": 1458.66}, {"date": "2026-05-21", "project": "夏县哈啰", "person": "公转", "desc": "贷款本金", "amount": 21231.43}, {"date": "2026-05-27", "project": "晋城哈啰", "person": "公转", "desc": "立赢企业管理公司服务费", "amount": 3600}, {"date": "2026-05-29", "project": "晋城办公室", "person": "秦琦", "desc": "话费、打印费、快递费", "amount": 248}, {"date": "2026-05-29", "project": "充电桩", "person": "秦琦", "desc": "锦华充电桩电费", "amount": 330}, {"date": "2026-05-30", "project": "充电桩", "person": "张保珠", "desc": "南村充电桩电费", "amount": 1050}, {"date": "2026-05-31", "project": "沁水哈啰", "person": "张保珠", "desc": "通行费", "amount": 24}, {"date": "2026-05-31", "project": "沁水哈啰", "person": "张保珠", "desc": "加油", "amount": 226}, {"date": "2026-05-31", "project": "沁水哈啰", "person": "张保珠", "desc": "电费", "amount": 400}, {"date": "2026-05-31", "project": "晋城哈啰", "person": "张保珠", "desc": "货车年检保养", "amount": 540}, {"date": "2026-05-31", "project": "街电充电宝", "person": "刘丽英", "desc": "快递费", "amount": 491.8}, {"date": "2026-05-31", "project": "夏县哈啰", "person": "张保珠", "desc": "夏县电费", "amount": 600}, {"date": "2026-04-05", "project": "晋城哈啰", "person": "公转", "desc": "银行手续费", "amount": 54.5}, {"date": "2026-04-15", "project": "沁水哈啰", "person": "公转", "desc": "工资社保", "amount": 3689.75}, {"date": "2026-04-15", "project": "晋城哈啰", "person": "公转", "desc": "工资社保", "amount": 10464.22}, {"date": "2026-04-15", "project": "晋城办公室", "person": "公转", "desc": "工资社保", "amount": 5099.22}, {"date": "2026-04-15", "project": "街电充电宝", "person": "公转", "desc": "工资社保", "amount": 19784.58}, {"date": "2026-04-15", "project": "街电充电宝", "person": "公转", "desc": "深圳街电科技有限公司货款", "amount": 12600}, {"date": "2026-04-15", "project": "夏县哈啰", "person": "公转", "desc": "工资社保", "amount": 8247.4}, {"date": "2026-04-29", "project": "高平哈啰", "person": "公转", "desc": "高平市长平中学校电费", "amount": 2352.6}, {"date": "2026-05-07", "project": "晋城哈啰", "person": "公转", "desc": "陈志鹏", "amount": 22512}]
+};
+
+var months = ['1月','2月','3月','4月','5月'],
+    monthsQ1 = ['1月','2月','3月'],
+    months5 = ['1月','2月','3月','4月','5月'];
+
+// =============== CHART INIT ===============
+var allCharts = [];
+function makeChart(id) {
+  var dom = document.getElementById(id);
+  if (!dom) return null;
+  // Ensure parent has layout
+  var c = echarts.init(dom);
+  allCharts.push(c);
+  return c;
+}
+
+function fmtW(v) { return (v/10000).toFixed(1)+'万'; }
+
+// C1: Revenue Trend
+(function(){
+  var c = makeChart('c1'); if(!c) return;
+  c.setOption({
+    tooltip: { trigger:'axis', valueFormatter:fmtW },
+    legend: { bottom:0, textStyle:{fontSize:11} },
+    grid: { left:60, right:20, top:20, bottom:40 },
+    xAxis: { type:'category', data:monthsQ1 },
+    yAxis: { type:'value', axisLabel:{formatter:function(v){return (v/10000).toFixed(0)+'万';}} },
+    series: [
+      { name:'哈啰', type:'bar', data:monthsQ1.map(function(m){return DATA.incomeByLine[m]['哈啰'];}),
+         itemStyle:{borderRadius:[4,4,0,0]}, label:{show:true,position:'top',formatter:function(p){return fmtW(p.value);}} },
+      { name:'街电充电宝', type:'bar', data:monthsQ1.map(function(m){return DATA.incomeByLine[m]['街电充电宝'];}),
+         itemStyle:{borderRadius:[4,4,0,0]}, label:{show:true,position:'top',formatter:function(p){return fmtW(p.value);}} },
+      { name:'充电桩', type:'bar', data:monthsQ1.map(function(m){return DATA.incomeByLine[m]['充电桩'];}),
+         itemStyle:{borderRadius:[4,4,0,0]}, label:{show:true,position:'top',formatter:function(p){return fmtW(p.value);}} }
+    ]
+  });
+})();
+
+// C2: Revenue Pie
+(function(){
+  var c = makeChart('c2'); if(!c) return;
+  var d = {'哈啰':0,'街电充电宝':0,'充电桩':0};
+  monthsQ1.forEach(function(m){
+    d['哈啰'] += DATA.incomeByLine[m]['哈啰'];
+    d['街电充电宝'] += DATA.incomeByLine[m]['街电充电宝'];
+    d['充电桩'] += DATA.incomeByLine[m]['充电桩'];
+  });
+  var total = d['哈啰']+d['街电充电宝']+d['充电桩'];
+  c.setOption({
+    tooltip: { trigger:'item', formatter:function(p){ return p.name+': '+(p.value/10000).toFixed(1)+'万元 ('+p.percent+'%)'; } },
+    series: [{
+      type:'pie', radius:['45%','75%'], center:['50%','50%'],
+      label: { formatter:'{b}\n{d}%', fontSize:13 },
+      emphasis: { label:{fontSize:18,fontWeight:'bold'} },
+      data: [
+        { value:d['哈啰'], name:'哈啰' },
+        { value:d['街电充电宝'], name:'街电充电宝' },
+        { value:d['充电桩'], name:'充电桩' }
+      ]
+    }]
+  });
+})();
+
+// C3: City Bar
+(function(){
+  var c = makeChart('c3'); if(!c) return;
+  var cities = {'晋城':0,'高平':0,'沁水':0,'夏县':0};
+  monthsQ1.forEach(function(m){
+    cities['晋城'] += DATA.cityIncome[m]['晋城'];
+    cities['高平'] += DATA.cityIncome[m]['高平'];
+    cities['沁水'] += DATA.cityIncome[m]['沁水'];
+    cities['夏县'] += DATA.cityIncome[m]['夏县'];
+  });
+  var names = ['晋城','高平','沁水','夏县'];
+  var vals = [cities['晋城'],cities['高平'],cities['沁水'],cities['夏县']];
+  var total = vals.reduce(function(a,b){return a+b;},0);
+  var colors = ['#1F4E79','#2E75B6','#C00000','#ED7D31'];
+  c.setOption({
+    tooltip: { trigger:'axis', valueFormatter:fmtW },
+    grid: { left:60, right:20, top:20, bottom:20 },
+    xAxis: { type:'category', data:names },
+    yAxis: { type:'value', axisLabel:{formatter:function(v){return (v/10000).toFixed(0)+'万';}} },
+    series: [{
+      type:'bar', data:vals.map(function(v,i){return {value:v, itemStyle:{borderRadius:[6,6,0,0],color:colors[i]}};}),
+      label: { show:true, position:'top', formatter:function(p){return fmtW(p.value)+' ('+(p.value/total*100).toFixed(1)+'%)';} }
+    }]
+  });
+})();
+
+// C4: Profit Margin (dual y-axis)
+(function(){
+  var c = makeChart('c4'); if(!c) return;
+  var lines = [
+    {name:'哈啰', revKey:'哈啰_收入', expKey:'哈啰_费用', profitKey:'哈啰_利润'},
+    {name:'街电', revKey:'街电_收入', expKey:'街电_费用', profitKey:'街电_利润'},
+    {name:'充电桩', revKey:'充电桩_收入', expKey:'充电桩_费用', profitKey:'充电桩_利润'}
+  ];
+  var revs=[], exps=[], margins=[], names=[];
+  lines.forEach(function(l){
+    var rev=0, exp=0;
+    monthsQ1.forEach(function(m){ rev+=DATA.profitByLine[m][l.revKey]; exp+=DATA.profitByLine[m][l.expKey]; });
+    revs.push(rev); exps.push(exp);
+    margins.push(rev>0?parseFloat(((rev-exp)/rev*100).toFixed(1)):0);
+    names.push(l.name);
+  });
+  c.setOption({
+    tooltip: { trigger:'axis', valueFormatter:function(v){return (v/10000).toFixed(1)+'万元';} },
+    legend: { bottom:0, textStyle:{fontSize:11} },
+    grid: { left:60, right:60, top:20, bottom:40 },
+    xAxis: { type:'category', data:names },
+    yAxis: [
+      { type:'value', name:'金额', axisLabel:{formatter:function(v){return (v/10000).toFixed(0)+'万';}} },
+      { type:'value', name:'利润率(%)', axisLabel:{formatter:'{value}%'} }
+    ],
+    series: [
+      { name:'收入', type:'bar', data:revs, itemStyle:{borderRadius:[4,4,0,0]},
+         label:{show:true,position:'top',formatter:function(p){return fmtW(p.value);}} },
+      { name:'费用', type:'bar', data:exps, itemStyle:{borderRadius:[4,4,0,0]},
+         label:{show:true,position:'top',formatter:function(p){return fmtW(p.value);}} },
+      { name:'利润率', type:'line', yAxisIndex:1, data:margins,
+         lineStyle:{width:3,color:'#ED7D31'}, symbol:'diamond', symbolSize:12,
+         label:{show:true,formatter:function(p){return p.value+'%';},color:'#ED7D31',fontWeight:'bold',fontSize:12} }
+    ]
+  });
+})();
+
+// C5: Profit by Line
+(function(){
+  var c = makeChart('c5'); if(!c) return;
+  var keys = ['哈啰_利润','街电_利润','充电桩_利润'];
+  var names = ['哈啰','街电充电宝','充电桩'];
+  c.setOption({
+    tooltip: { trigger:'axis', valueFormatter:fmtW },
+    legend: { bottom:0, textStyle:{fontSize:11} },
+    grid: { left:60, right:20, top:20, bottom:40 },
+    xAxis: { type:'category', data:monthsQ1 },
+    yAxis: { type:'value', axisLabel:{formatter:function(v){return (v/10000).toFixed(0)+'万';}} },
+    series: keys.map(function(k,i){
+      return {
+        name:names[i], type:'bar', itemStyle:{borderRadius:[4,4,0,0]},
+        data: monthsQ1.map(function(m){return DATA.profitByLine[m][k];}),
+        label:{show:true,position:function(p){return p.value>=0?'top':'bottom';},formatter:function(p){return fmtW(p.value);}}
+      };
+    })
+  });
+})();
+
+// C6: Revenue-Expense-Profit
+(function(){
+  var c = makeChart('c6'); if(!c) return;
+  c.setOption({
+    tooltip: { trigger:'axis', valueFormatter:fmtW },
+    legend: { bottom:0, textStyle:{fontSize:11} },
+    grid: { left:60, right:20, top:20, bottom:40 },
+    xAxis: { type:'category', data:monthsQ1 },
+    yAxis: { type:'value', axisLabel:{formatter:function(v){return (v/10000).toFixed(0)+'万';}} },
+    series: [
+      { name:'收入', type:'bar', data:monthsQ1.map(function(m){return DATA.profitByLine[m]['合计_收入'];}),
+         label:{show:true,position:'top',formatter:function(p){return fmtW(p.value);}} },
+      { name:'费用', type:'bar', data:monthsQ1.map(function(m){return DATA.profitByLine[m]['合计_费用'];}),
+         label:{show:true,position:'top',formatter:function(p){return fmtW(p.value);}} },
+      { name:'利润', type:'line', data:monthsQ1.map(function(m){return DATA.profitByLine[m]['合计_利润'];}),
+         lineStyle:{width:3,color:'#548235'}, symbol:'circle', symbolSize:10,
+         label:{show:true,formatter:function(p){return fmtW(p.value);},fontWeight:'bold'} }
+    ]
+  });
+})();
+
+// C7: Expense BarH
+(function(){
+  var c = makeChart('c7'); if(!c) return;
+  var cats = ['工资社保','电费','商务费','服务费','税金','贷款利息','电池','办公费','燃油费','车辆配件','餐饮','差旅费','手续费'];
+  var vals = cats.map(function(cat){return DATA.haloCatTotals[cat]||0;});
+  var total = vals.reduce(function(a,b){return a+b;},0);
+  // Reverse for horizontal bar (bottom=small, top=large)
+  cats.reverse(); vals.reverse();
+  var rcolors = ['#1F4E79','#2E75B6','#C00000','#E06666','#548235','#70AD47','#BF8F00','#ED7D31','#7FB3E0','#F4A4A4','#A9D18E','#D4A830','#B0B0B0'];
+  rcolors.reverse();
+  c.setOption({
+    tooltip: { trigger:'axis', formatter:function(params){ var p=params[0]; return p.name+': '+fmtW(p.value)+' ('+(p.value/total*100).toFixed(1)+'%)'; } },
+    grid: { left:100, right:120, top:10, bottom:10 },
+    xAxis: { type:'value', axisLabel:{formatter:function(v){return (v/10000).toFixed(0)+'万';}} },
+    yAxis: { type:'category', data:cats, axisLabel:{fontSize:12,fontWeight:'bold'} },
+    series: [{
+      type:'bar', data:vals.map(function(v,i){return {value:v,itemStyle:{borderRadius:[0,6,6,0],color:rcolors[i]}};}),
+      label:{show:true,position:'right',formatter:function(p){return fmtW(p.value)+' ('+(p.value/total*100).toFixed(1)+'%)';},fontSize:11}
+    }]
+  });
+})();
+
+// C8: Expense Trend
+(function(){
+  var c = makeChart('c8'); if(!c) return;
+  var topCats = ['工资社保','电费','商务费','服务费','税金','电池'];
+  c.setOption({
+    tooltip: { trigger:'axis', valueFormatter:fmtW },
+    legend: { bottom:0, textStyle:{fontSize:10} },
+    grid: { left:60, right:20, top:20, bottom:40 },
+    xAxis: { type:'category', data:months5, boundaryGap:false },
+    yAxis: { type:'value', axisLabel:{formatter:function(v){return (v/10000).toFixed(0)+'万';}} },
+    series: topCats.map(function(cat){
+      return {
+        name:cat, type:'line', smooth:true,
+        data: months5.map(function(m){return DATA.haloMonthlyExpense[m][cat]||0;}),
+        symbol:'circle', symbolSize:6,
+        label:{show:true,fontSize:10,formatter:function(p){return (p.value/10000).toFixed(1);}}
+      };
+    })
+  });
+})();
+
+// C9: Loan Progress
+(function(){
+  var c = makeChart('c9'); if(!c) return;
+  var dates = DATA.loanData.map(function(d){return d.date;});
+  var cumPaid = [];
+  var s = 0;
+  DATA.loanData.forEach(function(d){ s += d.due_total; cumPaid.push(s); });
+  var monthly = DATA.loanData.map(function(d){return d.total_principal + d.total_interest;});
+  c.setOption({
+    tooltip: { trigger:'axis', valueFormatter:function(v){return (v/10000).toFixed(1)+'万元';} },
+    legend: { bottom:0, textStyle:{fontSize:11} },
+    grid: { left:70, right:70, top:20, bottom:40 },
+    xAxis: { type:'category', data:dates, axisLabel:{rotate:45,fontSize:10} },
+    yAxis: [
+      { type:'value', name:'累计(万)', axisLabel:{formatter:function(v){return (v/10000).toFixed(0)+'万';}} },
+      { type:'value', name:'当期(万)', axisLabel:{formatter:function(v){return (v/10000).toFixed(0)+'万';}} }
+    ],
+    series: [
+      { name:'当期还款', type:'bar', data:monthly, yAxisIndex:1,
+         itemStyle:{borderRadius:[4,4,0,0],color:'#C00000'},
+         label:{show:true,position:'top',formatter:function(p){return fmtW(p.value);},fontSize:10} },
+      { name:'累计还款', type:'line', data:cumPaid, yAxisIndex:0,
+         lineStyle:{width:3,color:'#1F4E79'}, symbol:'circle', symbolSize:8,
+         areaStyle:{color:'rgba(31,78,121,0.15)'},
+         label:{show:true,formatter:function(p){return fmtW(p.value);},fontSize:11,fontWeight:'bold'} }
+    ]
+  });
+})();
+
+// =============== Resize ===============
+window.addEventListener('resize', function(){
+  allCharts.forEach(function(c){ try { c.resize(); } catch(e){} });
+});
+
+// =============== Data Tables ===============
+(function(){
+  var rows = DATA.incomeDetails.map(function(d,i){
+    return '<tr><td>'+(i+1)+'</td><td>'+d.name+'</td><td class="amount">'+d.amount.toLocaleString('zh-CN',{minimumFractionDigits:2})+'</td><td>'+d.bank+'</td></tr>';
+  }).join('');
+  document.getElementById('income-table').innerHTML = rows || '<tr><td colspan="4">暂无数据</td></tr>';
+})();
+
+(function(){
+  var shown = DATA.expenseDetails.slice(0, 80);
+  var rows = shown.map(function(d){
+    var amt = typeof d.amount === 'number' ? d.amount.toLocaleString('zh-CN',{minimumFractionDigits:2}) : d.amount;
+    return '<tr><td>'+d.date+'</td><td>'+d.project+'</td><td>'+d.person+'</td><td>'+d.desc+'</td><td class="amount">'+amt+'</td></tr>';
+  }).join('');
+  document.getElementById('expense-table').innerHTML = rows || '<tr><td colspan="5">暂无数据</td></tr>';
+})();
+</script>
+
+</body>
+</html>
